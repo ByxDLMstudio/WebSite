@@ -3,81 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Duck-Host Panel</title>
+    <title>DuckyModel AI</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #121214; color: #e1e1e6; margin: 0; padding: 20px; }
-        .container { max-width: 900px; margin: 0 auto; }
-        .header { display: flex; justify-content: space-between; align-items: center; background: #1a1a1e; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #29292e; }
-        .status { padding: 5px 10px; border-radius: 4px; font-weight: bold; }
-        .status.online { background: #04d361; color: #000; }
-        .status.offline { background: #ff79c6; color: #000; }
-        .btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 14px; margin-right: 10px; transition: 0.2s; }
-        .btn-start { background: #04d361; color: #000; }
-        .btn-start:hover { background: #02a94d; }
-        .btn-stop { background: #ff5555; color: #fff; }
-        .btn-stop:hover { background: #cc4444; }
-        .console-box { background: #000; border-radius: 8px; padding: 15px; height: 400px; overflow-y: auto; font-family: 'Courier New', Courier, monospace; font-size: 13px; color: #00ff00; border: 1px solid #29292e; white-space: pre-wrap; margin-bottom: 15px; }
-        .input-group { display: flex; }
-        .cmd-input { flex-grow: 1; padding: 12px; background: #1a1a1e; border: 1px solid #29292e; border-radius: 5px 0 0 5px; color: #fff; font-size: 14px; }
-        .cmd-input:focus { outline: none; border-color: #04d361; }
-        .btn-send { background: #6272a4; color: #fff; border-radius: 0 5px 5px 0; margin-right: 0; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', sans-serif; background: #0b0b0e; color: #e2e8f0; display: flex; justify-content: center; align-items: center; height: 100vh; padding: 10px; }
+        .chat-container { width: 100%; max-width: 600px; height: 85vh; background: #13131a; border-radius: 16px; border: 1px solid #23232f; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5); }
+        .chat-header { padding: 20px; background: #1a1a24; border-bottom: 1px solid #23232f; display: flex; justify-content: space-between; align-items: center; }
+        .header-info { display: flex; align-items: center; gap: 12px; }
+        .ai-avatar { width: 12px; height: 12px; background: #00ffaa; border-radius: 50%; box-shadow: 0 0 10px #00ffaa; }
+        .chat-header h2 { font-size: 18px; font-weight: 600; color: #fff; }
+        .token-btn { background: #29292e; color: #888; border: 1px solid #3a3a42; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; }
+        .token-btn:hover { background: #3a3a42; color: #fff; }
+        .chat-messages { flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+        .msg { max-width: 80%; padding: 12px 16px; border-radius: 12px; font-size: 15px; line-height: 1.4; word-wrap: break-word; }
+        .msg.user { background: #2563eb; color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; }
+        .msg.ai { background: #1e1e2f; color: #e2e8f0; align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid #2d2d3f; }
+        .chat-input-area { padding: 15px; background: #1a1a24; border-top: 1px solid #23232f; display: flex; gap: 10px; }
+        .chat-input { flex-grow: 1; background: #0b0b0e; border: 1px solid #23232f; padding: 12px; border-radius: 8px; color: #fff; font-size: 15px; outline: none; }
+        .chat-input:focus { border-color: #2563eb; }
+        .send-btn { background: #2563eb; color: #fff; border: none; padding: 0 20px; border-radius: 8px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="header">
-        <h2>Duck-Host Управление</h2>
-        <div id="status-badge" class="status {% if status == 'Запущен' %}online{% else %}offline{% endif %}">{{ status }}</div>
+<div class="chat-container">
+    <div class="chat-header">
+        <div class="header-info">
+            <div class="ai-avatar"></div>
+            <h2>DuckyModel Консоль</h2>
+        </div>
+        <button class="token-btn" onclick="updateToken()">Токен</button>
     </div>
-
-    <div style="margin-bottom: 20px;">
-        <button class="btn btn-start" onclick="controlServer('start')">Запустить</button>
-        <button class="btn btn-stop" onclick="controlServer('stop')">Остановить</button>
+    
+    <div class="chat-messages" id="chat-messages">
+        <div class="msg ai">Система готова.</div>
     </div>
-
-    <div class="console-box" id="console">{{ history }}</div>
-
-    <div class="input-group">
-        <input type="text" id="cmd" class="cmd-input" placeholder="Введите команду сервера (например: op игрок)..." onkeydown="if(event.key === 'Enter') sendCommand()">
-        <button class="btn btn-send" onclick="sendCommand()">Отправить</button>
+    
+    <div class="chat-input-area">
+        <input type="text" id="user-input" class="chat-input" placeholder="Введите сообщение..." onkeydown="if(event.key === 'Enter') sendMessage()">
+        <button class="send-btn" onclick="sendMessage()">Отправить</button>
     </div>
 </div>
 
 <script>
-    const consoleBox = document.getElementById('console');
-    consoleBox.scrollTop = consoleBox.scrollHeight;
+    const messagesContainer = document.getElementById('chat-messages');
+    const MODEL_URL = "https://api-inference.huggingface.co/models/AxisCommunity/DuckyModel_V1";
 
-    // Подключаем WebSocket для живой консоли
-    const ws = new WebSocket(`ws://${window.location.host}/console`);
+    let hfToken = localStorage.getItem('hf_token');
 
-    ws.onmessage = function(event) {
-        consoleBox.textContent += event.data;
-        consoleBox.scrollTop = consoleBox.scrollHeight; // Автопрокрутка вниз
-        
-        // Меняем статус на "Запущен", если видим логи загрузки
-        if (event.data.includes("Starting minecraft server")) {
-            document.getElementById('status-badge').className = "status online";
-            document.getElementById('status-badge').textContent = "Запущен";
-        }
-    };
-
-    async function controlServer(action) {
-        let response = await fetch(`/${action}`, { method: 'POST' });
-        let result = await response.json();
-        if (action === 'stop' && result.status === 'success') {
-            document.getElementById('status-badge').className = "status offline";
-            document.getElementById('status-badge').textContent = "Выключен";
+    function updateToken() {
+        const token = prompt("HF Token:", hfToken || "");
+        if (token !== null) {
+            localStorage.setItem('hf_token', token.trim());
+            hfToken = token.trim();
+            location.reload();
         }
     }
 
-    function sendCommand() {
-        const input = document.getElementById('cmd');
-        if (input.value.trim() !== "") {
-            ws.send(input.value);
-            input.value = "";
+    async function sendMessage() {
+        const input = document.getElementById('user-input');
+        const text = input.value.trim();
+        if (text === '') return;
+        
+        appendMessage(text, 'user');
+        input.value = '';
+        
+        const loadingDiv = appendMessage("...", 'ai');
+
+        if (!hfToken) {
+            loadingDiv.textContent = "404";
+            return;
         }
+
+        try {
+            const response = await fetch(MODEL_URL, {
+                headers: { 
+                    "Authorization": `Bearer ${hfToken}`,
+                    "Content-Type": "application/json"
+                },
+                method: "POST",
+                body: JSON.stringify({ inputs: text }),
+            });
+
+            const result = await response.json();
+            
+            let aiText = "";
+            if (Array.isArray(result) && result[0]?.generated_text) {
+                aiText = result[0].generated_text;
+            } else {
+                loadingDiv.textContent = "404";
+                return;
+            }
+
+            if (aiText.startsWith(text)) {
+                aiText = aiText.substring(text.length).trim();
+            }
+
+            loadingDiv.textContent = aiText || "404";
+
+        } catch (error) {
+            loadingDiv.textContent = "404";
+        }
+    }
+
+    function appendMessage(text, sender) {
+        const msgDiv = document.createElement('div');
+        msgDiv.classList.add('msg', sender);
+        msgDiv.textContent = text;
+        messagesContainer.appendChild(msgDiv);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        return msgDiv;
     }
 </script>
+
 </body>
 </html>
