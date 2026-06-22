@@ -3,124 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DuckyModel AI</title>
+    <title>Ducky Frontend</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Segoe UI', sans-serif; background: #0b0b0e; color: #e2e8f0; display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; gap: 20px; }
-        
-        /* Стили для твоей картинки */
-        .top-image { max-width: 100%; width: 400px; height: auto; border-radius: 12px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4); border: 1px solid #23232f; }
-        
-        .chat-container { width: 100%; max-width: 600px; height: 65vh; background: #13131a; border-radius: 16px; border: 1px solid #23232f; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5); }
-        .chat-header { padding: 20px; background: #1a1a24; border-bottom: 1px solid #23232f; display: flex; justify-content: space-between; align-items: center; }
-        .header-info { display: flex; align-items: center; gap: 12px; }
-        .ai-avatar { width: 12px; height: 12px; background: #00ffaa; border-radius: 50%; box-shadow: 0 0 10px #00ffaa; }
-        .chat-header h2 { font-size: 18px; font-weight: 600; color: #fff; }
-        .token-btn { background: #29292e; color: #888; border: 1px solid #3a3a42; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; }
-        .token-btn:hover { background: #3a3a42; color: #fff; }
-        .chat-messages { flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
-        .msg { max-width: 80%; padding: 12px 16px; border-radius: 12px; font-size: 15px; line-height: 1.4; word-wrap: break-word; }
-        .msg.user { background: #2563eb; color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; }
-        .msg.ai { background: #1e1e2f; color: #e2e8f0; align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid #2d2d3f; }
-        .chat-input-area { padding: 15px; background: #1a1a24; border-top: 1px solid #23232f; display: flex; gap: 10px; }
-        .chat-input { flex-grow: 1; background: #0b0b0e; border: 1px solid #23232f; padding: 12px; border-radius: 8px; color: #fff; font-size: 15px; outline: none; }
-        .chat-input:focus { border-color: #2563eb; }
-        .send-btn { background: #2563eb; color: #fff; border: none; padding: 0 20px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+        }
+        body { 
+            background: #0b0b0e; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            padding: 20px; 
+        }
+        .full-image { 
+            max-width: 100%; 
+            max-height: 90vh;
+            width: auto; 
+            height: auto; 
+            border-radius: 16px; 
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6); 
+            border: 1px solid #23232f; 
+        }
     </style>
 </head>
 <body>
 
-<img src="image.png" alt="Изображение" class="top-image">
-
-<div class="chat-container">
-    <div class="chat-header">
-        <div class="header-info">
-            <div class="ai-avatar"></div>
-            <h2>DuckyModel Консоль</h2>
-        </div>
-        <button class="token-btn" onclick="updateToken()">Токен</button>
-    </div>
-    
-    <div class="chat-messages" id="chat-messages">
-        <div class="msg ai">Система готова.</div>
-    </div>
-    
-    <div class="chat-input-area">
-        <input type="text" id="user-input" class="chat-input" placeholder="Введите сообщение..." onkeydown="if(event.key === 'Enter') sendMessage()">
-        <button class="send-btn" onclick="sendMessage()">Отправить</button>
-    </div>
-</div>
-
-<script>
-    const messagesContainer = document.getElementById('chat-messages');
-    const MODEL_URL = "https://api-inference.huggingface.co/models/AxisCommunity/DuckyModel_V1";
-
-    let hfToken = localStorage.getItem('hf_token');
-
-    function updateToken() {
-        const token = prompt("HF Token:", hfToken || "");
-        if (token !== null) {
-            localStorage.setItem('hf_token', token.trim());
-            hfToken = token.trim();
-            location.reload();
-        }
-    }
-
-    async function sendMessage() {
-        const input = document.getElementById('user-input');
-        const text = input.value.trim();
-        if (text === '') return;
-        
-        appendMessage(text, 'user');
-        input.value = '';
-        
-        const loadingDiv = appendMessage("...", 'ai');
-
-        if (!hfToken) {
-            loadingDiv.textContent = "404";
-            return;
-        }
-
-        try {
-            const response = await fetch(MODEL_URL, {
-                headers: { 
-                    "Authorization": `Bearer ${hfToken}`,
-                    "Content-Type": "application/json"
-                },
-                method: "POST",
-                body: JSON.stringify({ inputs: text }),
-            });
-
-            const result = await response.json();
-            
-            let aiText = "";
-            if (Array.isArray(result) && result[0]?.generated_text) {
-                aiText = result[0].generated_text;
-            } else {
-                loadingDiv.textContent = "404";
-                return;
-            }
-
-            if (aiText.startsWith(text)) {
-                aiText = aiText.substring(text.length).trim();
-            }
-
-            loadingDiv.textContent = aiText || "404";
-
-        } catch (error) {
-            loadingDiv.textContent = "404";
-        }
-    }
-
-    function appendMessage(text, sender) {
-        const msgDiv = document.createElement('div');
-        msgDiv.classList.add('msg', sender);
-        msgDiv.textContent = text;
-        messagesContainer.appendChild(msgDiv);
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        return msgDiv;
-    }
-</script>
+    <img src="image.png" alt="Загрузка изображения..." class="full-image">
 
 </body>
 </html>
