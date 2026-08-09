@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Chat</title>
-    <!-- Подключаем Tailwind CSS для быстрой и красивой стилизации -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -13,10 +12,10 @@
                 extend: {
                     colors: {
                         claude: {
-                            bg: '#18181b',      /* Основной фон */
-                            sidebar: '#121215', /* Фон боковой панели */
-                            panel: '#202024',   /* Цвет полей и карточек */
-                            accent: '#cc785c',  /* Фирменный терракотовый акцент */
+                            bg: '#18181b',
+                            sidebar: '#121215',
+                            panel: '#202024',
+                            accent: '#cc785c',
                             hover: '#2a2a30'
                         }
                     }
@@ -25,7 +24,6 @@
         }
     </script>
     <style>
-        /* Плавная прокрутка для чата */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #2a2a30; border-radius: 3px; }
@@ -33,16 +31,13 @@
 </head>
 <body class="bg-claude-bg text-gray-100 h-screen flex overflow-hidden font-sans">
 
-    <!-- Боковая панель (Sidebar) -->
     <aside class="w-64 bg-claude-sidebar flex flex-col justify-between border-r border-gray-800 hidden md:flex">
         <div class="p-3">
-            <!-- Кнопка нового чата -->
             <button onclick="newChat()" class="w-full flex items-center gap-2 bg-claude-panel hover:bg-claude-hover border border-gray-700 text-sm py-2.5 px-3 rounded-lg transition font-medium">
                 <svg class="w-4 h-4 text-claude-accent" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"></path></svg>
                 Новый чат
             </button>
             
-            <!-- Список истории (примеры) -->
             <div class="mt-6 text-xs font-semibold text-gray-500 uppercase tracking-wider px-3 mb-2">Недавние</div>
             <div class="space-y-1">
                 <div class="text-sm text-gray-300 hover:bg-claude-hover py-2 px-3 rounded-lg cursor-pointer truncate transition">Разработка ИИ модели</div>
@@ -50,7 +45,6 @@
             </div>
         </div>
 
-        <!-- Нижняя часть сайдбара -->
         <div class="p-3 border-t border-gray-800">
             <div class="flex items-center gap-3 px-3 py-2 text-sm text-gray-400">
                 <div class="w-7 h-7 rounded-full bg-claude-accent flex items-center justify-center text-white font-bold text-xs">AI</div>
@@ -59,27 +53,22 @@
         </div>
     </aside>
 
-    <!-- Основная область чата -->
     <main class="flex-1 flex flex-col h-full relative">
         
-        <!-- Шапка -->
         <header class="h-14 border-b border-gray-800 flex items-center justify-between px-4 bg-claude-bg/80 backdrop-blur z-10">
-            <span class="text-sm font-medium text-gray-400">Orion Zet / Custom Model</span>
+            <span class="text-sm font-medium text-gray-400">Solade / Custom Model</span>
             <span class="text-xs bg-claude-panel text-claude-accent px-2.5 py-1 rounded-full border border-gray-800">Hugging Face Space Connected</span>
         </header>
 
-        <!-- История сообщений -->
         <div id="chat-container" class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 max-w-3xl w-full mx-auto">
-            <!-- Приветственное сообщение -->
             <div class="flex gap-4 items-start">
-                <div class="w-8 h-8 rounded-full bg-claude-accent flex-shrink-0 flex items-center justify-center text-white text-sm font-bold">AI</div>
+                <div class="w-8 h-8 rounded-full bg-claude-accent flex-shrink-0 flex items-center justify-center text-white text-sm font-bold">Solade</div>
                 <div class="space-y-2 text-gray-200 text-sm leading-relaxed bg-claude-panel p-4 rounded-2xl rounded-tl-sm border border-gray-800">
-                    <p>Привет! Интерфейс готов. Напиши что-нибудь, и запрос полетит на твой Hugging Face Space.</p>
+                    <p>Привет!</p>
                 </div>
             </div>
         </div>
 
-        <!-- Панель ввода сообщения -->
         <div class="p-4 bg-claude-bg">
             <div class="max-w-3xl mx-auto relative">
                 <div class="flex items-end bg-claude-panel border border-gray-700 rounded-2xl p-2 focus-within:border-claude-accent transition shadow-lg">
@@ -97,12 +86,10 @@
 
     </main>
 
-    <!-- Скрипты управления -->
     <script>
         const chatContainer = document.getElementById('chat-container');
         const userInput = document.getElementById('user-input');
 
-        // Автоматическое увеличение высоты текстового поля
         userInput.addEventListener('input', function() {
             this.style.height = 'auto';
             this.style.height = (this.scrollHeight) + 'px';
@@ -118,9 +105,9 @@
         function newChat() {
             chatContainer.innerHTML = `
                 <div class="flex gap-4 items-start">
-                    <div class="w-8 h-8 rounded-full bg-claude-accent flex-shrink-0 flex items-center justify-center text-white text-sm font-bold">AI</div>
+                    <div class="w-8 h-8 rounded-full bg-claude-accent flex-shrink-0 flex items-center justify-center text-white text-sm font-bold">Solade</div>
                     <div class="space-y-2 text-gray-200 text-sm leading-relaxed bg-claude-panel p-4 rounded-2xl rounded-tl-sm border border-gray-800">
-                        <p>Новый чат начат. Чем могу помочь?</p>
+                        <p>Новый чат начат.</p>
                     </div>
                 </div>
             `;
@@ -130,7 +117,17 @@
             const text = userInput.value.trim();
             if (!text) return;
 
-            // Добавляем сообщение пользователя в чат
+            const inferenceParams = {
+                max_new_tokens: 256,
+                temperature: 0.7,
+                top_p: 0.9
+            };
+
+            const payload = {
+                prompt: text,
+                params: inferenceParams
+            };
+
             chatContainer.innerHTML += `
                 <div class="flex gap-4 items-start justify-end">
                     <div class="bg-claude-panel text-gray-100 text-sm px-4 py-3 rounded-2xl rounded-tr-sm border border-gray-700 max-w-xl">
@@ -144,11 +141,10 @@
             userInput.style.height = 'auto';
             chatContainer.scrollTop = chatContainer.scrollHeight;
 
-            // Блок индикатора загрузки ответа
             const loadingId = 'loading-' + Date.now();
             chatContainer.innerHTML += `
                 <div id="${loadingId}" class="flex gap-4 items-start">
-                    <div class="w-8 h-8 rounded-full bg-claude-accent flex-shrink-0 flex items-center justify-center text-white text-sm font-bold">AI</div>
+                    <div class="w-8 h-8 rounded-full bg-claude-accent flex-shrink-0 flex items-center justify-center text-white text-sm font-bold">Solade</div>
                     <div class="bg-claude-panel text-gray-400 text-sm px-4 py-3 rounded-2xl rounded-tl-sm border border-gray-800 animate-pulse">
                         Генерация ответа...
                     </div>
@@ -157,25 +153,32 @@
             chatContainer.scrollTop = chatContainer.scrollHeight;
 
             try {
-                // СДЕСЬ БУДЕТ ЗАПРОС К ТВОЕМУ SPACE (напишем чуть позже)
-                // const response = await fetch("https://ТВОЙ-SPACE.hf.space/generate", { ... });
-                
-                // Имитация ответа для проверки интерфейса:
-                setTimeout(() => {
-                    document.getElementById(loadingId).remove();
-                    appendAiMessage("Это тестовый ответ интерфейса. Когда подключим твой Space, модель начнет отвечать отсюда!");
-                }, 1500);
+                const response = await fetch("https://ТВОЙ-SPACE.hf.space/generate", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+
+                document.getElementById(loadingId).remove();
+
+                if (!response.ok) {
+                    appendAiMessage(`Error ${response.status}`);
+                    return;
+                }
+
+                const data = await response.json();
+                appendAiMessage(data.response || "Error 500");
 
             } catch (error) {
                 document.getElementById(loadingId).remove();
-                appendAiMessage("Ошибка соединения с бэкендом Space.");
+                appendAiMessage("Error 503");
             }
         }
 
         function appendAiMessage(text) {
             chatContainer.innerHTML += `
                 <div class="flex gap-4 items-start">
-                    <div class="w-8 h-8 rounded-full bg-claude-accent flex-shrink-0 flex items-center justify-center text-white text-sm font-bold">AI</div>
+                    <div class="w-8 h-8 rounded-full bg-claude-accent flex-shrink-0 flex items-center justify-center text-white text-sm font-bold">Solade</div>
                     <div class="space-y-2 text-gray-200 text-sm leading-relaxed bg-claude-panel p-4 rounded-2xl rounded-tl-sm border border-gray-800 max-w-xl">
                         <p>${escapeHtml(text)}</p>
                     </div>
